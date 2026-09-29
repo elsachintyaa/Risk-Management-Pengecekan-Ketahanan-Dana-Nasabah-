@@ -2,8 +2,10 @@ FROM dunglas/frankenphp:php8.4-bookworm
 
 WORKDIR /app
 
+# Copy seluruh project Laravel
 COPY . /app
 
+# Install system dependencies + PHP extension
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -11,14 +13,17 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install zip \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Install Laravel dependencies
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
     --prefer-dist
 
+# Siapkan folder Laravel yang harus writable
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
@@ -27,9 +32,13 @@ RUN mkdir -p \
     bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-
+# PHP production configuration
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# Vercel default container port
+ENV PORT=80
+
+# FrankenPHP akan membaca Caddyfile
 EXPOSE 80
 
 CMD ["frankenphp", "run", "--config", "/app/Caddyfile"]
