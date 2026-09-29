@@ -1,4 +1,5 @@
 {
+    frankenphp
     auto_https off
 }
 
@@ -7,5 +8,9 @@
 
     encode gzip
 
-    php_server
+    php_server {
+        try_files {path} {path}/ /index.php
+    }
+
+    file_server
 }
