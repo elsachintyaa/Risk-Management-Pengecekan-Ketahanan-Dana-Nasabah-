@@ -31,8 +31,6 @@ RUN php artisan optimize
 
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-ENV SERVER_ROOT=/app/public
-
 EXPOSE 80
 
-CMD ["sh", "-c", "frankenphp run --config /etc/frankenphp/Caddyfile --adapter caddyfile --watch"]
+CMD ["frankenphp", "run", "--config", "/app/Caddyfile"]
